@@ -111,9 +111,9 @@ type
     function GetEnumerator: TJsonNodeEnumerator;
     { Loading and saving methods }
     procedure LoadFromStream(Stream: TStream);
-    procedure SaveToStream(Stream: TStream);
+    procedure SaveToStream(Stream: TStream; Formatted:boolean=false);
     procedure LoadFromFile(const FileName: string);
-    procedure SaveToFile(const FileName: string);
+    procedure SaveToFile(const FileName: string; Formatted:boolean=false);
     { Convert a json string into a value or a collection of nodes. If the
       current node is root then the json must be an array or object. }
     procedure Parse(const Json: string);
@@ -446,12 +446,15 @@ begin
   Parse(S);
 end;
 
-procedure TJsonNode.SaveToStream(Stream: TStream);
+procedure TJsonNode.SaveToStream(Stream: TStream; Formatted:boolean=false);
 var
   S: string;
   I: Int64;
 begin
-  S := Value;
+  if Formatted then
+    S := Value
+  else
+    S := AsJson;
   I := Length(S);
   Stream.Write(PChar(S)^, I);
 end;
@@ -468,13 +471,13 @@ begin
   end;
 end;
 
-procedure TJsonNode.SaveToFile(const FileName: string);
+procedure TJsonNode.SaveToFile(const FileName: string; Formatted:boolean=false);
 var
   F: TFileStream;
 begin
   F := TFileStream.Create(FileName, fmCreate);
   try
-    SaveToStream(F);
+    SaveToStream(F, Formatted);
   finally
     F.Free;
   end;
