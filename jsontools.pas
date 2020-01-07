@@ -200,6 +200,9 @@ function JsonToXml(const S: string): string;
 
 implementation
 
+var
+  JsonSettings: TFormatSettings;
+
 resourcestring
   SNodeNotCollection = 'Node is not a container';
   SRootNodeKind = 'Root node must be an array or object';
@@ -868,7 +871,7 @@ begin
     FValue := '0';
     Exit(0);
   end;
-  Result := StrToFloatDef(FValue, 0);
+  Result := StrToFloatDef(FValue, 0, JsonSettings);
 end;
 
 procedure TJsonNode.SetAsNumber(Value: Double);
@@ -880,7 +883,7 @@ begin
     Clear;
     FKind := nkNumber;
   end;
-  FValue := FloatToStr(Value);
+  FValue := FloatToStr(Value, JsonSettings);
 end;
 
 function TJsonNode.Add(Kind: TJsonNodeKind; const Name, Value: string): TJsonNode;
@@ -943,7 +946,7 @@ end;
 
 function TJsonNode.Add(const Name: string; const N: Double): TJsonNode; overload;
 begin
-  Result := Add(nkNumber, Name, FloatToStr(N));
+  Result := Add(nkNumber, Name, FloatToStr(N, JsonSettings));
 end;
 
 function TJsonNode.Add(const Name: string; const S: string): TJsonNode; overload;
@@ -1496,4 +1499,7 @@ begin
   end;
 end;
 
+initialization
+  JsonSettings := DefaultFormatSettings;
+  JsonSettings.DecimalSeparator := '.';
 end.
