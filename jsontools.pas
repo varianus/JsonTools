@@ -147,6 +147,11 @@ type
     function Child(const Name: string): TJsonNode; overload;
     { Search for a node using a path string }
     function Find(const Path: string; AllowCreate:boolean=false): TJsonNode;
+    { Search for a node using a path string, if found return AsString value, else default value }
+    function GetValueDef(const Path: string; _Default: string): String; overload;
+    function GetValueDef(const Path: string; _Default: boolean): boolean; overload;
+    function GetValueDef(const Path: string; _Default: integer): integer; overload;
+
     { Format the node and all its children as json }
     function ToString: string; override;
     { Root node is read only. A node the root when it has no parent. }
@@ -1096,6 +1101,40 @@ begin
   Result := N;
 end;
 
+function TJsonNode.GetValueDef(const Path: string; _Default: string): String;
+var
+  tmpNode: TJsonNode;
+begin
+  tmpNode := Find(Path);
+  if Assigned(tmpNode) then
+    Result := tmpNode.AsString
+  else
+    Result:= _Default;
+
+end;
+
+function TJsonNode.GetValueDef(const Path: string; _Default: boolean): boolean;
+var
+  tmpNode: TJsonNode;
+begin
+  tmpNode := Find(Path);
+  if Assigned(tmpNode) then
+    Result := tmpNode.AsBoolean
+  else
+    Result:= _Default;
+
+end;
+function TJsonNode.GetValueDef(const Path: string; _Default: integer): integer;
+var
+  tmpNode: TJsonNode;
+begin
+  tmpNode := Find(Path);
+  if Assigned(tmpNode) then
+    Result := tmpNode.AsInteger
+  else
+    Result:= _Default;
+
+end;
 function TJsonNode.Format(const Indent: string): string;
 
   function EnumNodes: string;
